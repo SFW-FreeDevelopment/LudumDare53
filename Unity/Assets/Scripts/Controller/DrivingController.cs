@@ -6,10 +6,12 @@ namespace LD53
 {
     public class DrivingController : MonoBehaviour
     {
-        public float speed = 10f;
+        public float maxSpeed = 10f;
+        public float acceleration = 5f;
         public float rotationSpeed = 100f;
         public float boostMultiplier = 2f;
         public float boostDuration = 1f;
+        public float driftMultiplier = 0.1f;
 
         private bool isBoosting = false;
         private float boostEndTime = 0f;
@@ -23,10 +25,10 @@ namespace LD53
 
         void FixedUpdate()
         {
-            float moveHorizontal = Input.GetAxis("Horizontal");
             float moveVertical = Input.GetAxis("Vertical");
 
-            Vector2 movement = new Vector2(moveHorizontal, moveVertical);
+            Vector2 movement = transform.up * moveVertical;
+            movement.Normalize();
 
             if (isBoosting && Time.time < boostEndTime)
             {
@@ -37,12 +39,23 @@ namespace LD53
                 isBoosting = false;
             }
 
-            rb.AddForce(movement * speed);
+            // Calculate speed based on current velocity.
+            float currentSpeed = rb.velocity.magnitude;
+            if (currentSpeed < maxSpeed)
+            {
+                rb.AddForce(movement * acceleration);
+            }
 
-            float rotation = -moveHorizontal * rotationSpeed * Time.deltaTime;
+            // Calculate drift force based on velocity and rotation.
+            float driftAmount = Vector2.Dot(rb.velocity, -transform.right.normalized);
+            Vector2 driftForce = transform.right * driftAmount * driftMultiplier;
+
+            rb.AddForce(driftForce);
+
+            float rotation = -Input.GetAxis("Horizontal") * rotationSpeed * Time.deltaTime;
             transform.Rotate(0, 0, rotation);
 
-            if (Input.GetButtonDown("Boost") && !isBoosting)
+            if (Input.GetKeyDown(KeyCode.Space) && !isBoosting)
             {
                 isBoosting = true;
                 boostEndTime = Time.time + boostDuration;

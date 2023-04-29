@@ -1,0 +1,47 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 996a471638b640d3ad1bb470c37bab62, type: 3}
+  m_Name: Jokes
+  m_EditorClassIdentifier: 
+  _strings:
+  - "Why did the ice cream worker get fired? They kept adding too many sprinkles
+    and toppings \u2013 they couldn\u2019t control themselves!"
+  - Why did the banana split up with the ice cream? Because it was hard to spoon
+    out their differences.
+  - Why did the ice cream want to be a detective? Because they always solved the
+    case of the missing scoop.
+  - What do you call a melted ice cream cone? A puddle of happiness!
+  - "What did the ice cream say when it got cold? \"I\u2019m chilled out!\""
+  - "Why don\u2019t ice cream cones ever forget anything? They have photographic
+    sprinkles!"
+  - "Why is ice cream always invited to a party? It\u2019s the life of the sundae!"
+  - What do you call an alligator in an ice cream parlor? An ice cream croc!
+  - Why did the ice cream truck have to change tires? They were getting rocky road!
+  - What do you get when you cross a vampire with ice cream? A melting fangtastic
+    treat!
+  - Why did the strawberry liqueur go to the ice cream parlor? To get a rocky road
+    hug!
+  - Why did the boy sneak into the ice cream parlor? To get a sundae surprise!
+  - What do you call a melting ice cream sandwich? An ice cream between stages!
+  - Why did the ice cream truck driver quit playing instruments? All they ever made
+    was soft serve!
+  - Why did the ice cream cone judge the hot dog? He wanted to know if it was worth
+    the long walk to find happiness!
+  - What do you get when you cross a scoop of vanilla with a burnt red cherry? A
+    rocky cherry!
+  - Why did the ice cream truck stop serving turtles? Too much drama on the belt!
+  - "What did the ice cream say to the slice of cake? \"If you weren\u2019t so sweet,
+    we could have something special!\" "
+  - "Why don't cows trust ice cream parlors? They\u2019re always milking the cold
+    cash cow!"
+  - What happens when you give ice cream treats to a group of ninja turtles? They
+    get inside your shell and become super ice cream warriors!

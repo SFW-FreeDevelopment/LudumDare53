@@ -1,0 +1,35 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 996a471638b640d3ad1bb470c37bab62, type: 3}
+  m_Name: Proverbs
+  m_EditorClassIdentifier: 
+  _strings:
+  - '"Life is uncertain, eat ice cream first."'
+  - '"You can''t buy happiness, but you can buy ice cream."'
+  - '"All you need is love and a little bit of ice cream."'
+  - '"Everything''s better with ice cream on top."'
+  - '"There''s always room for ice cream."'
+  - '"I scream, you scream, we all scream for ice cream."'
+  - '"You can''t have too much of a good thing, especially when it comes to ice cream."'
+  - '"Ice cream is the best medicine for a bad day."'
+  - '"When life gives you lemons, trade them for ice cream."'
+  - '"Life is short, eat the ice cream."'
+  - '"Ice cream doesn''t make the world go round, but it certainly makes life sweeter."'
+  - '"The cure for anything is ice cream."'
+  - '"There''s nothing a scoop of ice cream can''t fix."'
+  - '"Ice cream is proof that God loves us and wants us to be happy."'
+  - '"You can''t be sad while eating ice cream."'
+  - '"Ice cream makes every situation better."'
+  - '"Ice cream is the answer to all of life''s problems."'
+  - '"The only thing better than ice cream is more ice cream."'
+  - '"When in doubt, eat ice cream."'
+  - '"A day without ice cream is like a day without sunshine."'

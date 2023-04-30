@@ -2,11 +2,11 @@
 {
     public enum IceCreamFlavor
     {
-        Vanilla,
-        Chocolate,
-        Strawberry,
-        Mint,
-        Blueberry,
-        Sherbet
+        Vanilla = 0,
+        Chocolate = 1,
+        Strawberry = 2,
+        Mint = 3,
+        Blueberry = 4,
+        Sherbet = 5
     }
 }

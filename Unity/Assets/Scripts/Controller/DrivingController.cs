@@ -6,69 +6,139 @@ namespace LD53
 {
     public class DrivingController : MonoBehaviour
     {
+        // Public variables
         public float maxSpeed = 10f;
         public float acceleration = 5f;
+        public float deceleration = 5f;
+        public float reverseSpeed = 2f;
+        public float reverseDeceleration = 4f;
         public float rotationSpeed = 100f;
-        public float boostMultiplier = 2f;
-        public float boostDuration = 1f;
-        public float driftMultiplier = 0.1f;
 
-        private bool isBoosting = false;
-        private float boostEndTime = 0f;
 
+        // Private variables
         private Rigidbody2D rb;
+        private float currentSpeed = 0f;
+        private float decelerationPercentage = 0.1f;
 
+        // Start is called before the first frame update
         void Start()
         {
+            // Get a reference to the Rigidbody2D component
             rb = GetComponent<Rigidbody2D>();
         }
 
+        // FixedUpdate is called once per physics frame
         void FixedUpdate()
         {
-            float moveVertical = Input.GetAxis("Vertical");
+            //Move car forward, decelerate, brake, or reverse depending on input
+            VerticalMove();
 
-            Vector2 movement = transform.up * moveVertical;
-            movement.Normalize();
+            // Move the car based on speed and direction
+            Vector2 movement = transform.up * currentSpeed;
+            rb.velocity = movement;
 
-            if (isBoosting && Time.time < boostEndTime)
+            //Rotate car left or right
+            RotateCar();
+
+
+        }
+
+        void VerticalMove()
+        {
+            var input = GetVerticalInput();
+            switch (input)
             {
-                movement *= boostMultiplier;
-            }
-            else
-            {
-                isBoosting = false;
-            }
-
-            // Calculate speed based on current velocity.
-            float currentSpeed = rb.velocity.magnitude;
-            if (currentSpeed < maxSpeed)
-            {
-                rb.AddForce(movement * acceleration);
-            }
-
-            // Calculate drift force based on velocity and rotation.
-            float driftAmount = Vector2.Dot(rb.velocity, -transform.right.normalized);
-            Vector2 driftForce = transform.right * driftAmount * driftMultiplier;
-
-            rb.AddForce(driftForce);
-
-            float rotation = -Input.GetAxis("Horizontal") * rotationSpeed * Time.deltaTime;
-            transform.Rotate(0, 0, rotation);
-
-            if (Input.GetKeyDown(KeyCode.Space) && !isBoosting)
-            {
-                isBoosting = true;
-                boostEndTime = Time.time + boostDuration;
+                case 0:
+                    decelerationPercentage += Time.fixedDeltaTime;
+                    Decelerate();
+                    break;
+                case 1:
+                    decelerationPercentage = 0.1f;
+                    Accelerate();
+                    break;
+                case -1:
+                    decelerationPercentage = 0.5f;
+                    Brake();
+                    break;
             }
         }
 
-        void OnCollisionEnter2D(Collision2D collision)
+        int GetVerticalInput()
         {
-            if (collision.gameObject.CompareTag("Wall"))
+            float verticalInput = Input.GetAxisRaw("Vertical");
+
+            if (verticalInput > 0f)
             {
-                rb.velocity = Vector2.zero;
-                rb.angularVelocity = 0f;
+                return 1;  // W or Up Arrow was pressed
             }
+            else if (verticalInput < 0f)
+            {
+                return -1;  // S or Down Arrow was pressed
+            }
+            else
+            {
+                return 0;  // No vertical input
+            }
+        }
+
+        void RotateCar()
+        {
+            var input = GetHorizontalInput();
+            transform.Rotate(0f, 0f, -input * rotationSpeed * Time.fixedDeltaTime);
+        }
+
+
+
+        int GetHorizontalInput()
+        {
+            float horizontalInput = Input.GetAxisRaw("Horizontal");
+
+            if (horizontalInput > 0f)
+            {
+                return 1;  // D or Right Arrow was pressed
+            }
+            else if (horizontalInput < 0f)
+            {
+                return -1;  // A or Left Arrow was pressed
+            }
+            else
+            {
+                return 0;  // No horizontal input
+            }
+        }
+
+
+        void Accelerate()
+        {
+            currentSpeed += acceleration * Time.fixedDeltaTime;
+            currentSpeed = Mathf.Clamp(currentSpeed, 0f, maxSpeed);
+        }
+
+        void Decelerate()
+        {
+            float decelerationAmount = currentSpeed * decelerationPercentage;
+            currentSpeed -= decelerationAmount * Time.fixedDeltaTime;
+            currentSpeed = Mathf.Clamp(currentSpeed, 0f, maxSpeed);
+        }
+
+        void Brake()
+        {
+            if (currentSpeed > 0.05f)
+            {
+                float decelerationAmount = currentSpeed * decelerationPercentage * 1.5f;
+                currentSpeed -= decelerationAmount * Time.fixedDeltaTime;
+                currentSpeed = Mathf.Clamp(currentSpeed, 0f, maxSpeed);
+            }
+            else
+            {
+                Reverse();
+            }
+        }
+
+        void Reverse()
+        {
+            currentSpeed -= reverseSpeed * Time.fixedDeltaTime;
+            currentSpeed = Mathf.Clamp(currentSpeed, -maxSpeed*0.5f, 0f);
         }
     }
 }

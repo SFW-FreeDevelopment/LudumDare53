@@ -34,6 +34,14 @@ public class GameController : ControllerBase
     {
         return Ok(await _playerRepository.Get(id));
     }
+    
+    [HttpGet("players/getTopTen")]
+    [SwaggerResponse(StatusCodes.Status200OK, "Get the current top 10 players", typeof(List<Player>))]
+    [SwaggerResponse(StatusCodes.Status400BadRequest, null)]
+    public async Task<IActionResult> GetTopTen()
+    {
+        return Ok(await _playerRepository.GetTopTen());
+    }
 
     [HttpPost("processGameResults")]
     [SwaggerResponse(StatusCodes.Status201Created, "Called when a game has ended, creates player resource to be displayed on leaderboard", typeof(Player))]

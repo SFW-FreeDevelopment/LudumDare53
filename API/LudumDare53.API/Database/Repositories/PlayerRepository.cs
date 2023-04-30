@@ -15,4 +15,10 @@ public class PlayerRepository : Repository<Player>
         var playerList = await base.Get();
         return playerList.OrderBy(x => x.Name).ToList();
     }
+
+    public async Task<List<Player>> GetTopTen()
+    {
+        var playerList = await base.Get();
+        return playerList.OrderByDescending(x => x.DaysCompleted).ThenByDescending(x => x.TotalMoneyEarned).Take(10).ToList();
+    }
 }

@@ -18,7 +18,7 @@ public class Repository<T> where T : Resource
     {
         try
         {
-            var items = await GetCollection().AsQueryable().ToListAsync();
+            var items = await GetCollection().AsQueryable().Where(x => x != null && !x.Id.Contains("test")).ToListAsync();
             return items;
         }
         catch (Exception e)

@@ -48,7 +48,6 @@ public class Repository<T> where T : Resource
         try
         {
             data.Id ??= Guid.NewGuid().ToString();
-            data.Version = 1;
             data.CreatedAt = DateTime.UtcNow;
             data.UpdatedAt = data.CreatedAt;
             await GetCollection().InsertOneAsync(data);
@@ -65,7 +64,6 @@ public class Repository<T> where T : Resource
     public virtual async Task<T> Update(string id, T data)
     {
         data.UpdatedAt = DateTime.UtcNow;
-        data.Version++;
         await GetCollection().ReplaceOneAsync(x => x.Id.Equals(id), data);
         return data;
     }

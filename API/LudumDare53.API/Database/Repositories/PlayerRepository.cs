@@ -9,4 +9,10 @@ public class PlayerRepository : Repository<Player>
     {
         CollectionName = "players";
     }
+
+    public override async Task<List<Player>> Get()
+    {
+        var playerList = await base.Get();
+        return playerList.OrderBy(x => x.Name).ToList();
+    }
 }

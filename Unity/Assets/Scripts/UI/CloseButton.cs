@@ -22,7 +22,7 @@ namespace LD53.UI
 
         private void Close()
         {
-            AudioManager.Instance.Play("back");
+            AudioManager.Instance.Play("click");
             _target.SetActive(false);
         }
     }

@@ -83,7 +83,7 @@ namespace LD53
         void HorizontalMovement(MovementCase movement)
         {
             RotateCar(movement);
-            if (movement == MovementCase.Accelerating && currentSpeed > (maxSpeed * .75))
+            if ((movement == MovementCase.Accelerating || movement == MovementCase.Braking) && currentSpeed > (maxSpeed * .75))
             {
                 Slide();
             }

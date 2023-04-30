@@ -1,4 +1,4 @@
-![](/Art/Ice-Cream-Express-Logo.png)
+![](/Art/Ice-Cream-Express-Logo-sm.png)
 
 # LudumDare53, AKA Ice Cream Express
 Game jam project for [Ludum Dare 53 - "Delivery"](https://ldjam.com/events/ludum-dare/53).

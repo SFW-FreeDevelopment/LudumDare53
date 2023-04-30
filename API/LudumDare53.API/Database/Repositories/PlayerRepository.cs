@@ -19,6 +19,6 @@ public class PlayerRepository : Repository<Player>
     public async Task<List<Player>> GetTopTen()
     {
         var playerList = await base.Get();
-        return playerList.OrderByDescending(x => x.DaysCompleted).ThenByDescending(x => x.TotalMoneyEarned).ToList();
+        return playerList.OrderByDescending(x => x.DaysCompleted).ThenByDescending(x => x.TotalMoneyEarned).Take(10).ToList();
     }
 }

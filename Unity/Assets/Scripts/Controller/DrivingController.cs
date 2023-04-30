@@ -33,6 +33,17 @@ namespace LD53
         {
             verticalInput = GetVerticalInput();
             horizontalInput = GetHorizontalInput();
+
+        }
+
+        private void OnCollisionEnter2D(Collision2D collision)
+        {
+            rb.freezeRotation = true;
+        }
+
+        private void OnCollisionExit2D(Collision2D collision)
+        {
+            rb.freezeRotation = false;
         }
 
         // FixedUpdate is called once per physics frame

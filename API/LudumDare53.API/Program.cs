@@ -1,3 +1,4 @@
+using LudumDare53.API.Database.Repositories;
 using Microsoft.OpenApi.Models;
 using MongoDB.Driver;
 
@@ -11,7 +12,7 @@ var configuration = new ConfigurationBuilder()
     .Build();
 
 // Add services to the container.
-//builder.Services.AddScoped<PlayerRepository>();
+builder.Services.AddScoped<PlayerRepository>();
 builder.Services.AddScoped<IMongoClient, MongoClient>(_ =>
     new MongoClient(MongoClientSettings.FromConnectionString(configuration.GetConnectionString("MongoDatabaseConnectionString"))));
 builder.Services.AddControllers();

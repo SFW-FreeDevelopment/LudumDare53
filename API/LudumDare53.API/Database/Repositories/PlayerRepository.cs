@@ -5,7 +5,7 @@ namespace LudumDare53.API.Database.Repositories;
 
 public class PlayerRepository : Repository<Player>
 {
-    protected PlayerRepository(IMongoClient mongoClient) : base(mongoClient)
+    public PlayerRepository(IMongoClient mongoClient) : base(mongoClient)
     {
         CollectionName = "players";
     }

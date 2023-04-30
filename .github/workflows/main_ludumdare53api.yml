@@ -1,12 +1,19 @@
 # Docs for the Azure Web Apps Deploy action: https://github.com/Azure/webapps-deploy
 # More GitHub Actions for Azure: https://github.com/Azure/actions
 
-name: Build and deploy ASP.Net Core app to Azure Web App - ludumdare53api
+name: Build and deploy LudumDare53.API to Azure Web App - ludumdare53api
+
+env:
+  AZURE_WEBAPP_NAME: LudumDare53.API   # set this to your application's name
+  AZURE_WEBAPP_PACKAGE_PATH: './API/LudumDare53.API'      # set this to the path to your web app project, defaults to the repository root
 
 on:
   push:
     branches:
-      - main
+      - 'main'
+    paths:
+      - 'API/LudumDare53.API/**'
+      - '!Unity/**'
   workflow_dispatch:
 
 jobs:
@@ -24,9 +31,20 @@ jobs:
 
       - name: Build with dotnet
         run: dotnet build --configuration Release
+        working-directory: API\LudumDare53.API
 
       - name: dotnet publish
         run: dotnet publish -c Release -o ${{env.DOTNET_ROOT}}/myapp
+        working-directory: API\LudumDare53.API
+
+      #substitute production appsettings entries to appsettings json file
+      - name: App Settings Variable Substitution
+        uses: microsoft/variable-substitution@v1
+        with:
+          files: '${{env.DOTNET_ROOT}}/myapp/appsettings.json'
+        env:
+          ConnectionStrings.MongoDatabaseConnectionString: ${{ secrets.MONGODB_CONNECTION_STRING }}
+          App.ServerRootAddress: ${{ env.SERVER_ROOT_ADDRESS }}
 
       - name: Upload artifact for deployment job
         uses: actions/upload-artifact@v2

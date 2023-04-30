@@ -20,16 +20,9 @@ namespace LD53.Minigame
             }
         }
 
-        public void GiveCone(IceCreamFlavor flavor1, IceCreamFlavor? flavor2)
+        public bool GiveCone(IceCreamFlavor flavor1, IceCreamFlavor? flavor2)
         {
-            if (flavor1 == Flavor1 && flavor2 == Flavor2)
-            {
-                // happy
-            }
-            else
-            {
-                // unhappy
-            }
+            return flavor1 == Flavor1 && flavor2 == Flavor2;
         }
     }
 }

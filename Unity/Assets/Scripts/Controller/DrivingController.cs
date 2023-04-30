@@ -8,20 +8,19 @@ namespace LD53
     public class DrivingController : MonoBehaviour
     {
         // Public variables
-        public float maxSpeed = 10f;
-        public float acceleration = 5f;
-        public float deceleration = 5f;
-        public float reverseSpeed = 2f;
-        public float reverseDeceleration = 4f;
-        public float rotationSpeed = 100f;
-        public float slideSpeed = 75f;
+        public float maxSpeed = 2f;
+        public float acceleration = 1f;
+        public float deceleration = .5f;
+        public float reverseSpeed = 200f;
+        public float reverseDeceleration = 0f;
+        public float rotationSpeed = 1.7f;
 
         // Private variables
         private Rigidbody2D rb;
         private float currentSpeed = 0f;
-        private float decelerationPercentage = 0.1f;
         private int verticalInput = 0;
         private int horizontalInput = 0;
+        private bool isReversing = false;
 
         // Start is called before the first frame update
         void Start()
@@ -49,21 +48,18 @@ namespace LD53
 
         private MovementCase VerticalMove()
         {
-            MovementCase movementCase = new ();
+            MovementCase movementCase = new();
             switch (verticalInput)
             {
                 case 0:
-                    decelerationPercentage += Time.fixedDeltaTime;
                     Decelerate();
                     movementCase = MovementCase.Neutral;
                     break;
                 case 1:
-                    decelerationPercentage = 0.1f;
                     Accelerate();
                     movementCase = MovementCase.Accelerating;
                     break;
                 case -1:
-                    decelerationPercentage = 0.5f;
                     movementCase = Brake();
                     break;
                 default:
@@ -83,10 +79,6 @@ namespace LD53
         void HorizontalMovement(MovementCase movement)
         {
             RotateCar(movement);
-            if ((movement == MovementCase.Accelerating || movement == MovementCase.Braking) && currentSpeed > (maxSpeed * .75))
-            {
-                Slide();
-            }
         }
 
         int GetVerticalInput()
@@ -95,14 +87,17 @@ namespace LD53
 
             if (verticalInput > 0f)
             {
+                isReversing = false;
                 return 1;  // W or Up Arrow was pressed
             }
             else if (verticalInput < 0f)
             {
+                isReversing = true;
                 return -1;  // S or Down Arrow was pressed
             }
             else
             {
+                isReversing = false;
                 return 0;  // No vertical input
             }
         }
@@ -111,36 +106,26 @@ namespace LD53
         void RotateCar(MovementCase movement)
         {
             //Only apply rotation if car is moving
-            if (currentSpeed < 0f)
+            if (rb.velocity.magnitude < 0.05)
             {
                 return;
             }
-
-            float torque;
+            
             switch (movement)
             {
                 case MovementCase.Reverse:
-                    torque = -horizontalInput * rotationSpeed * Time.fixedDeltaTime * 1.2f;
-                    rb.AddTorque(torque, ForceMode2D.Force);
+                    rb.rotation -= horizontalInput * rotationSpeed;
                     break;
                 case MovementCase.Neutral:
-                    torque = -horizontalInput * rotationSpeed * Time.fixedDeltaTime;
-                    rb.AddTorque(torque, ForceMode2D.Force);
+                    rb.rotation -= horizontalInput * rotationSpeed;
                     break;
                 case MovementCase.Braking:
-                    torque = -horizontalInput * rotationSpeed * Time.fixedDeltaTime * 0.3f;
-                    rb.AddTorque(torque, ForceMode2D.Force);
+                    rb.rotation -= horizontalInput * rotationSpeed;
                     break;
                 case MovementCase.Accelerating:
-                    torque = -horizontalInput * rotationSpeed * Time.fixedDeltaTime * 0.7f;
-                    rb.AddTorque(torque, ForceMode2D.Force);
+                    rb.rotation -= horizontalInput * rotationSpeed;
                     break;
             }
-        }
-
-        void Slide()
-        {
-            rb.AddForce(rb.velocity, ForceMode2D.Force);
         }
 
         int GetHorizontalInput()
@@ -161,7 +146,6 @@ namespace LD53
             }
         }
 
-
         void Accelerate()
         {
             currentSpeed += acceleration * Time.fixedDeltaTime;
@@ -170,18 +154,24 @@ namespace LD53
 
         void Decelerate()
         {
-            float decelerationAmount = currentSpeed * decelerationPercentage;
-            currentSpeed -= decelerationAmount * Time.fixedDeltaTime;
-            currentSpeed = Mathf.Clamp(currentSpeed, 0f, maxSpeed);
+            if (currentSpeed > 0f)
+            {
+                currentSpeed -= acceleration * Time.fixedDeltaTime;
+                currentSpeed = Mathf.Clamp(currentSpeed, 0f, maxSpeed);
+            }
+
+            if (currentSpeed < 0f)
+            {
+                currentSpeed += acceleration * Time.fixedDeltaTime;
+                currentSpeed = Mathf.Clamp(currentSpeed, -maxSpeed*0.5f, 0f);
+            }
         }
 
         public MovementCase Brake()
         {
-            if (currentSpeed > 0.05f)
+            if (rb.velocity.magnitude > 0 && !isReversing)
             {
-                float decelerationAmount = currentSpeed * decelerationPercentage * 1.5f;
-                currentSpeed -= decelerationAmount * Time.fixedDeltaTime;
-                currentSpeed = Mathf.Clamp(currentSpeed, 0f, maxSpeed);
+                Decelerate();
                 return MovementCase.Braking;
             }
             else

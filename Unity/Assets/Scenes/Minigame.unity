@@ -2770,7 +2770,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: $245
+  m_text: $0
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: a01adc117bf44424a86bfb62d890f5a0, type: 2}
   m_sharedMaterial: {fileID: 3690901279500856602, guid: a01adc117bf44424a86bfb62d890f5a0, type: 2}
@@ -12382,6 +12382,11 @@ MonoBehaviour:
   - {fileID: 21300000, guid: f0ec91b3b8bc5f8458abd009d021af02, type: 3}
   - {fileID: 21300000, guid: e90a30e9f69d52943b16063a26c6c1b0, type: 3}
   - {fileID: 21300000, guid: 123e3c1ce4f103f4cb031ff1318d4079, type: 3}
+  _kidSprites:
+  - {fileID: 21300000, guid: 3f924b7fa54cf754e9efb9662dbd9676, type: 3}
+  - {fileID: 21300000, guid: e8d1855c892097f46958ba567fe1f051, type: 3}
+  - {fileID: 21300000, guid: b730ef83f5e4a6d47836b100cad86886, type: 3}
+  - {fileID: 21300000, guid: 5ff6588780f3c644faba27ae6c752212, type: 3}
 --- !u!4 &1714404023
 Transform:
   m_ObjectHideFlags: 0

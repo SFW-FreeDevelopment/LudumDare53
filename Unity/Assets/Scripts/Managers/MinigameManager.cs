@@ -31,6 +31,7 @@ namespace LD53.Managers
         private bool _gameOver = false;
         private Coroutine _timerRoutine;
         private ushort _currentTime = 0;
+        private uint _cash = 0;
         
         protected override void InitSingletonInstance()
         {
@@ -45,6 +46,7 @@ namespace LD53.Managers
             
             EventManager.OnGameOver += OnGameOver;
             EventManager.OnDayOver += EndDay;
+            EventManager.OnIceCreamDelivered += OnIceCreamDelivered;
             
             _driveAwayButton.onClick.AddListener(DriveAway);
             
@@ -65,6 +67,7 @@ namespace LD53.Managers
         {
             EventManager.OnGameOver -= OnGameOver;
             EventManager.OnDayOver -= EndDay;
+            EventManager.OnIceCreamDelivered -= OnIceCreamDelivered;
         }
 
         private void Update()
@@ -101,12 +104,19 @@ namespace LD53.Managers
         public void Quit()
         {
             // TODO: Write stats
+            AudioManager.Instance.Play("click");
             SceneManager.LoadScene("Menu");
         }
         
         private void OnGameOver()
         {
             Debug.Log("Game over!");
+        }
+        
+        private void OnIceCreamDelivered()
+        {
+            _cash += 5;
+            _moneyText.text = _cash.ToString("C0");
         }
 
         private void EndDay()
@@ -124,14 +134,16 @@ namespace LD53.Managers
 
         private void DriveUp()
         {
+            AudioManager.Instance.Play("click");
             _truckCanvas.SetActive(true);
             _truckSprites.SetActive(true);
             _overworldCanvas.SetActive(false);
             _overworldSprites.SetActive(false);
         }
         
-        private void DriveAway()
+        public void DriveAway()
         {
+            AudioManager.Instance.Play("click");
             _overworldCanvas.SetActive(true);
             _overworldSprites.SetActive(true);
             _truckCanvas.SetActive(false);

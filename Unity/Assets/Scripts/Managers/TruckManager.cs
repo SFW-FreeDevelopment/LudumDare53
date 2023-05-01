@@ -1,8 +1,10 @@
-﻿using LD53.Abstractions;
+﻿using System;
+using LD53.Abstractions;
 using LD53.Enums;
 using LD53.Minigame;
 using UnityEngine;
 using UnityEngine.UI;
+using Random = System.Random;
 
 namespace LD53.Managers
 {
@@ -16,6 +18,7 @@ namespace LD53.Managers
         [SerializeField] private SpriteRenderer _iceCream1, _iceCream2;
         [SerializeField] private Image _requestedIceCream1, _requestedIceCream2;
         [SerializeField] private Sprite[] _iceCreamFlavorSprites;
+        [SerializeField] private Sprite[] _kidSprites;
         public Order Order { get; set; } = new Order();
         
         public IceCreamFlavor? Flavor1 { get; private set; }
@@ -31,6 +34,11 @@ namespace LD53.Managers
             _mintButton.onClick.AddListener(() => Scoop(IceCreamFlavor.Mint));
             _blueberryButton.onClick.AddListener(() => Scoop(IceCreamFlavor.Blueberry));
             _sherbetButton.onClick.AddListener(() => Scoop(IceCreamFlavor.Sherbet));
+        }
+
+        private void OnEnable()
+        {
+            DriveUp();
         }
 
         private void Scoop(IceCreamFlavor flavor)
@@ -53,6 +61,7 @@ namespace LD53.Managers
         {
             Trash();
             Order.Generate();
+            _kid.sprite = _kidSprites[UnityEngine.Random.Range(0, _kidSprites.Length)];
             _requestedIceCream1.sprite = _iceCreamFlavorSprites[(int)Order.Flavor1];
             if (Order.Flavor2 != null)
             {
@@ -72,16 +81,16 @@ namespace LD53.Managers
             var coneWasCorrect = Order.GiveCone(Flavor1.Value, Flavor2);
             if (coneWasCorrect)
             {
-                // do things
+                EventManager.IceCreamDelivered();
             }
-            else
-            {
-                
-            }
+            MinigameManager.Instance.DriveAway();
+
         }
         
         private void Trash()
         {
+            AudioManager.Instance.Play("click");
+
             Flavor1 = null;
             Flavor2 = null;
             _iceCream1.sprite = null;

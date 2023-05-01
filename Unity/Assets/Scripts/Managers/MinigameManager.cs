@@ -36,11 +36,13 @@ namespace LD53.Managers
         public ushort DayNumber { get; private set; } = 1;
         public int ConesServed { get; set; } = 0;
         private bool _isPaused = false;
+        public bool IsPaused => _isPaused;
         private bool _gameOver = false;
         private Coroutine _timerRoutine;
         private ushort _currentTime = 0;
         private int _cash = 0;
-        public int Cash => _cash;
+        private int _totalCash = 0;
+        public int Cash => _totalCash;
         [SerializeField] private GameObject[] _houses;
         [SerializeField] private List<GameObject> _activeHouses = new List<GameObject>();
         public GameObject LastHouse { get; set; }
@@ -86,12 +88,13 @@ namespace LD53.Managers
 
         private void StartTime()
         {
+            _timerText.text = $"{(_currentTime / 60) + 1}:{_currentTime % 60:00} PM";
             _timerRoutine = StartCoroutine(CoroutineTemplate.DelayAndFireLoopRoutine(1, () =>
             {
                 if (_gameOver) return;
                 if (_isPaused) return;
                 _currentTime += 5;
-                if (_currentTime == 240)
+                if (_currentTime == 180)
                 {
                     EventManager.DayOver();
                 }
@@ -158,7 +161,7 @@ namespace LD53.Managers
                 {
                     Name = $"Anonymous_{System.Guid.NewGuid().ToString("N")}",
                     DaysCompleted = DayNumber,
-                    TotalMoneyEarned = _cash,
+                    TotalMoneyEarned = Cash,
                     DeliveriesMade = ConesServed
 
                 }, null);
@@ -178,6 +181,8 @@ namespace LD53.Managers
         private void OnIceCreamDelivered(int money)
         {
             _cash += money;
+            _totalCash += money;
+            ConesServed++;
             _moneyText.text = _cash.ToString("C0");
         }
 
@@ -197,17 +202,17 @@ namespace LD53.Managers
         
         private void StartDay()
         {
-            _currentTime = 0;
-            DayNumber++;
-            _dayText.text = $"Day {DayNumber}";
-            StartTime();
+            AudioManager.Instance.Play("register");
             _cash -= 20;
             if (_cash < 0)
             {
                 EventManager.GameOver();
                 return;
             }
-            AudioManager.Instance.Play("register");
+            _currentTime = 0;
+            DayNumber++;
+            _dayText.text = $"Day {DayNumber}";
+            StartTime();
             AudioManager.Instance.Play("rooster");
             _moneyText.text = _cash.ToString("C0");
         }
@@ -265,8 +270,11 @@ namespace LD53.Managers
             _overworldSprites.SetActive(true);
             _truckCanvas.SetActive(false);
             _truckSprites.SetActive(false);
-            LastHouse.GetComponent<House>().JustLeft = true;
-            LastHouse.GetComponent<BoxCollider2D>().enabled = true;
+            if (LastHouse != null)
+            {
+                LastHouse.GetComponent<House>().JustLeft = true;
+                LastHouse.GetComponent<BoxCollider2D>().enabled = true;
+            }
         }
     }
 }

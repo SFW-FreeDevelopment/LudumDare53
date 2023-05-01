@@ -36,9 +36,12 @@ namespace LD53
 
         private void Update()
         {
+            if (MinigameManager.Instance.IsPaused)
+            {
+                return;
+            }
             verticalInput = GetVerticalInput();
             horizontalInput = GetHorizontalInput();
-
         }
 
         private void OnCollisionEnter2D(Collision2D collision)
@@ -54,6 +57,11 @@ namespace LD53
         // FixedUpdate is called once per physics frame
         void FixedUpdate()
         {
+            if (MinigameManager.Instance.IsPaused)
+            {
+                return;
+            }
+            
             //Move car forward, decelerate, brake, or reverse depending on input and return what type of movement was done
             var movement = VerticalMove();
 

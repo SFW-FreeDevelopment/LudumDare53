@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using LudumDare53.API.Models;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Serialization;
 using Proyecto26;
 using UnityEngine;
 
@@ -15,7 +16,10 @@ namespace LD53.Clients
         {
             const string url = BaseURL + "/processGameResults";
             Debug.Log(url);
-            var json = JsonConvert.SerializeObject(gameResults);
+            var json = JsonConvert.SerializeObject(gameResults, new JsonSerializerSettings
+            {
+                ContractResolver = new CamelCasePropertyNamesContractResolver()
+            });
             Debug.Log(json);
             RestClient.Post(url, json)
                 .Then(response =>
@@ -27,7 +31,7 @@ namespace LD53.Clients
                 })
                 .Catch(error =>
                 {
-                    Debug.Log("Request failed");
+                    Debug.Log($"Request failed: {json}");
                     Debug.Log(error?.InnerException?.Message ?? "");
                     Debug.Log($"Could not fetch the player.{Environment.NewLine}{error?.Message}");
                 });

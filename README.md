@@ -23,7 +23,7 @@ Venture out each day to deliver ice cream to all the boys and girls in the neigh
 
 ## Links
 - [Web Player](https://stevengarberg.itch.io/ice-cream-express)
-- [Ludum Dare Entry](https://ldjam.com/events/ludum-dare/52/harvest-rush)
+- [Ludum Dare Entry](https://ldjam.com/events/ludum-dare/53/ice-cream-express)
 
 ## Tools
 - Unity

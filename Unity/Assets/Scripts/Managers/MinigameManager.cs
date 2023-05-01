@@ -94,7 +94,7 @@ namespace LD53.Managers
                 if (_gameOver) return;
                 if (_isPaused) return;
                 _currentTime += 5;
-                if (_currentTime == 180)
+                if (_currentTime == 240)
                 {
                     EventManager.DayOver();
                 }
@@ -203,7 +203,7 @@ namespace LD53.Managers
         private void StartDay()
         {
             AudioManager.Instance.Play("register");
-            _cash -= 20;
+            _cash -= 15 + (DayNumber * 5);
             if (_cash < 0)
             {
                 EventManager.GameOver();

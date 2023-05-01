@@ -136,7 +136,7 @@ namespace LD53
                 switch (movement)
                 {
                     case MovementCase.Reverse:
-                        rb.rotation -= -horizontalInput * rotationSpeed *-1;
+                        rb.rotation -= horizontalInput * rotationSpeed * -1;
                         break;
                     case MovementCase.Neutral:
                         rb.rotation -= horizontalInput * rotationSpeed;

@@ -1,4 +1,10 @@
-﻿using LD53.Abstractions;
+﻿using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using LD53.Abstractions;
+using LD53.Behaviors;
+using LD53.Clients;
+using LudumDare53.API.Models;
 using TMPro;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -22,16 +28,24 @@ namespace LD53.Managers
         [SerializeField] private GameObject _overworldSprites;
         [SerializeField] private GameObject _pauseMenu;
         [SerializeField] private GameObject _jokeWindow, _proverbWindow;
+        [SerializeField] private GameObject _gameOverWindow;
         
         [Header("Misc")]
         [SerializeField] private AudioSource _musicAudioSource;
         
         public ushort DayNumber { get; private set; } = 1;
+        public int ConesServed { get; set; } = 0;
         private bool _isPaused = false;
         private bool _gameOver = false;
         private Coroutine _timerRoutine;
         private ushort _currentTime = 0;
-        private uint _cash = 0;
+        private int _cash = 0;
+        public int Cash => _cash;
+        [SerializeField] private GameObject[] _houses;
+        [SerializeField] private List<GameObject> _activeHouses = new List<GameObject>();
+        public GameObject LastHouse { get; set; }
+        public int LastHouseGameObjectId { get; set; }
+        public (float x, float y) LastHouseCoordinates { get; set; }
         
         protected override void InitSingletonInstance()
         {
@@ -43,23 +57,45 @@ namespace LD53.Managers
             {
                 // do nothing
             }
+
+            _houses = GameObject.FindGameObjectsWithTag("House");
             
             EventManager.OnGameOver += OnGameOver;
             EventManager.OnDayOver += EndDay;
+            EventManager.OnDayStart += StartDay;
             EventManager.OnIceCreamDelivered += OnIceCreamDelivered;
             
             _driveAwayButton.onClick.AddListener(DriveAway);
-            
+
+            StartTime();
+
+            for (var i = 0; i < 5; i++)
+            {
+                var rng = UnityEngine.Random.Range(0, 10);
+                var index = (i * 10) + rng;
+                _activeHouses.Add(_houses[index]);
+            }
+
+            foreach (var house in _activeHouses)
+            {
+                var houseComponent = house.GetComponent<House>();
+                houseComponent.Active = true;
+                house.GetComponentInChildren<ConeIndicator>().gameObject.GetComponent<SpriteRenderer>().enabled = true;
+            }
+        }
+
+        private void StartTime()
+        {
             _timerRoutine = StartCoroutine(CoroutineTemplate.DelayAndFireLoopRoutine(1, () =>
             {
                 if (_gameOver) return;
                 if (_isPaused) return;
-                _currentTime++;
-                if (_currentTime == 120)
+                _currentTime += 5;
+                if (_currentTime == 240)
                 {
                     EventManager.DayOver();
                 }
-                _timerText.text = $"{(_currentTime / 60) + 1}:{_currentTime % 60:00}";
+                _timerText.text = $"{(_currentTime / 60) + 1}:{_currentTime % 60:00} PM";
             }));
         }
 
@@ -67,6 +103,7 @@ namespace LD53.Managers
         {
             EventManager.OnGameOver -= OnGameOver;
             EventManager.OnDayOver -= EndDay;
+            EventManager.OnDayStart -= StartDay;
             EventManager.OnIceCreamDelivered -= OnIceCreamDelivered;
         }
 
@@ -101,44 +138,124 @@ namespace LD53.Managers
             }
         }
 
+        public void EndSession()
+        {
+            EventManager.GameOver();
+        }
+        
         public void Quit()
         {
-            // TODO: Write stats
             AudioManager.Instance.Play("click");
+            PostResults();
             SceneManager.LoadScene("Menu");
+        }
+
+        private async Task PostResults()
+        {
+            try
+            {
+                ApiClient.ProcessGameResults(new PlayerDto
+                {
+                    Name = $"Anonymous_{System.Guid.NewGuid().ToString("N")}",
+                    DaysCompleted = DayNumber,
+                    TotalMoneyEarned = _cash,
+                    DeliveriesMade = ConesServed
+
+                }, null);
+            }
+            catch
+            {
+                // do nothing
+            }
+            await Task.CompletedTask;
         }
         
         private void OnGameOver()
         {
-            Debug.Log("Game over!");
+            _gameOverWindow.SetActive(true);
         }
         
-        private void OnIceCreamDelivered()
+        private void OnIceCreamDelivered(int money)
         {
-            _cash += 5;
+            _cash += money;
             _moneyText.text = _cash.ToString("C0");
         }
 
         private void EndDay()
         {
             StopCoroutine(_timerRoutine);
+            DriveAway();
             _timerRoutine = null;
-            _jokeWindow.SetActive(true);
+            _proverbWindow.SetActive(true);
+            AudioManager.Instance.Play("end-day");
         }
 
+        public void CloseProverbWindow()
+        {
+            EventManager.DayStart();
+        }
+        
         private void StartDay()
         {
+            _currentTime = 0;
             DayNumber++;
-            _proverbWindow.SetActive(true);
+            _dayText.text = $"Day {DayNumber}";
+            StartTime();
+            _cash -= 20;
+            if (_cash < 0)
+            {
+                EventManager.GameOver();
+                return;
+            }
+            AudioManager.Instance.Play("register");
+            AudioManager.Instance.Play("rooster");
+            _moneyText.text = _cash.ToString("C0");
         }
 
-        private void DriveUp()
+        public void DeactivateHouse(House house)
         {
+            _activeHouses.Remove(house.gameObject);
+            house.Active = false;
+            house.GetComponentInChildren<ConeIndicator>().gameObject.GetComponent<SpriteRenderer>().enabled = false;
+        }
+
+        private void ActivateHouse()
+        {
+            var inactiveHouses = _houses.Except(_activeHouses);
+            var index = UnityEngine.Random.Range(0, inactiveHouses.Count());
+            GameObject house = null;
+            int i = 0;
+            foreach (var obj in inactiveHouses)
+            {
+                if (i == index)
+                {
+                    house = obj;
+                    break;
+                }
+                i++;
+            }
+            
+            _activeHouses.Add(house);
+            
+            var houseComponent = house.GetComponent<House>();
+            houseComponent.Active = true;
+            LastHouse = house;
+            LastHouseGameObjectId = LastHouse.GetInstanceID();
+            LastHouseCoordinates = (house.transform.position.x, house.transform.position.y);
+            house.GetComponentInChildren<ConeIndicator>().gameObject.GetComponent<SpriteRenderer>().enabled = true;
+            house.GetComponent<BoxCollider2D>().enabled = false;
+        }
+        
+        public void DriveUp(House house)
+        {
+            DeactivateHouse(house);
+            ActivateHouse();
             AudioManager.Instance.Play("click");
             _truckCanvas.SetActive(true);
             _truckSprites.SetActive(true);
             _overworldCanvas.SetActive(false);
             _overworldSprites.SetActive(false);
+            TruckManager.Instance.DriveUp();
         }
         
         public void DriveAway()
@@ -148,6 +265,8 @@ namespace LD53.Managers
             _overworldSprites.SetActive(true);
             _truckCanvas.SetActive(false);
             _truckSprites.SetActive(false);
+            LastHouse.GetComponent<House>().JustLeft = true;
+            LastHouse.GetComponent<BoxCollider2D>().enabled = true;
         }
     }
 }

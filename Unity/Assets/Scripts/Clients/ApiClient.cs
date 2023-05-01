@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using LudumDare53.API.Models;
 using Newtonsoft.Json;
 using Proyecto26;
 using UnityEngine;
@@ -8,10 +9,11 @@ namespace LD53.Clients
 {
     public class ApiClient
     {
-        var baseURL = "https://ludumdare53api.azurewebsites.net/";
-        public static void ProcessGameResults(GameResults gameResults, Action<Player> successCallback)
+        private const string BaseURL = "https://ludumdare53api.azurewebsites.net";
+        
+        public static void ProcessGameResults(PlayerDto gameResults, Action<PlayerDto> successCallback)
         {
-            var url = baseURL + "/processGameResults";
+            const string url = BaseURL + "/processGameResults";
             Debug.Log(url);
             var json = JsonConvert.SerializeObject(gameResults);
             Debug.Log(json);
@@ -19,7 +21,7 @@ namespace LD53.Clients
                 .Then(response =>
                 {
                     Debug.Log("Request successful");
-                    var deserializedPlayer = JsonConvert.DeserializeObject<Player>(response.Text);
+                    var deserializedPlayer = JsonConvert.DeserializeObject<PlayerDto>(response.Text);
                     successCallback(deserializedPlayer);
                     Debug.Log(JsonConvert.SerializeObject(deserializedPlayer, Formatting.Indented));
                 })
@@ -31,16 +33,16 @@ namespace LD53.Clients
                 });
         }
         
-        public static void FetchTop10(Action<List<object>> successCallback)
+        public static void FetchTop10(Action<List<PlayerDto>> successCallback)
         {
-            var url = baseURL + "/players/getTopTen";
+            const string url = BaseURL + "/players/getTopTen";
             Debug.Log(url);
         
             RestClient.Get(url)
                 .Then(response =>
                 {
                     Debug.Log("Request successful");
-                    var deserializedPlayers = JsonConvert.DeserializeObject<List<Player>>(response.Text);
+                    var deserializedPlayers = JsonConvert.DeserializeObject<List<PlayerDto>>(response.Text);
                     successCallback(deserializedPlayers);
                     Debug.Log(JsonConvert.SerializeObject(deserializedPlayers, Formatting.Indented));
                 })

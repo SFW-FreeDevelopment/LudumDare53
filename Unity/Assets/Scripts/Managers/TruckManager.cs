@@ -57,7 +57,7 @@ namespace LD53.Managers
             }
         }
         
-        private void DriveUp()
+        public void DriveUp()
         {
             Trash();
             Order.Generate();
@@ -77,19 +77,25 @@ namespace LD53.Managers
         private void AttemptGiveCone()
         {
             if (Flavor1 == null) return;
-            AudioManager.Instance.Play("register");
+            
             var coneWasCorrect = Order.GiveCone(Flavor1.Value, Flavor2);
             if (coneWasCorrect)
             {
-                EventManager.IceCreamDelivered();
+                AudioManager.Instance.Play("register");
+                EventManager.IceCreamDelivered(Order.Flavor2 != null ? 5 : 3);
             }
+            else
+            {
+                AudioManager.Instance.Play("click-alt");
+                EventManager.IceCreamDelivered(Flavor2 != null ? 2 : 1);
+            }
+            MinigameManager.Instance.ConesServed++;
             MinigameManager.Instance.DriveAway();
-
         }
         
         private void Trash()
         {
-            AudioManager.Instance.Play("click");
+            AudioManager.Instance.Play("trash");
 
             Flavor1 = null;
             Flavor2 = null;

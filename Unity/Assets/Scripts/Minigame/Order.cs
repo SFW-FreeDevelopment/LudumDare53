@@ -18,6 +18,10 @@ namespace LD53.Minigame
             {
                 Flavor2 = (IceCreamFlavor)iceCreamFlavorValues.GetValue(Random.Range(0, iceCreamFlavorValues.Length));
             }
+            else
+            {
+                Flavor2 = null;
+            }
         }
 
         public bool GiveCone(IceCreamFlavor flavor1, IceCreamFlavor? flavor2)

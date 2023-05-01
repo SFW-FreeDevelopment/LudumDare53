@@ -11,6 +11,7 @@ Venture out each day to deliver ice cream to all the boys and girls in the neigh
 - Delivering the incorrect scoops give you $1 for singles and $2 for doubles
 - Use WASD to drive to marked houses around town
 - Click the buttons in the truck to prepare the correct cone
+- It costs $20 a day to keep the truck running
 
 ## Members
 - [@StevenGarberg](https://github.com/StevenGarberg)

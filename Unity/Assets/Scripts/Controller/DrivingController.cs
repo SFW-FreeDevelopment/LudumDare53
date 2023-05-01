@@ -132,22 +132,23 @@ namespace LD53
             {
                 return;
             }
-            
-            switch (movement)
-            {
-                case MovementCase.Reverse:
-                    rb.rotation -= horizontalInput * rotationSpeed;
-                    break;
-                case MovementCase.Neutral:
-                    rb.rotation -= horizontalInput * rotationSpeed;
-                    break;
-                case MovementCase.Braking:
-                    rb.rotation -= horizontalInput * rotationSpeed;
-                    break;
-                case MovementCase.Accelerating:
-                    rb.rotation -= horizontalInput * rotationSpeed;
-                    break;
-            }
+
+                switch (movement)
+                {
+                    case MovementCase.Reverse:
+                        rb.rotation -= -horizontalInput * rotationSpeed *-1;
+                        break;
+                    case MovementCase.Neutral:
+                        rb.rotation -= horizontalInput * rotationSpeed;
+                        break;
+                    case MovementCase.Braking:
+                        rb.rotation -= horizontalInput * rotationSpeed;
+                        break;
+                    case MovementCase.Accelerating:
+                        rb.rotation -= horizontalInput * rotationSpeed;
+                        break;
+                }
+           
         }
 
         int GetHorizontalInput()

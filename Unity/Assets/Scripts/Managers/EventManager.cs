@@ -15,5 +15,8 @@ namespace LD53.Managers
         
         public static event Action OnDayStart;
         public static void DayStart() => OnDayStart?.Invoke();
+        
+        public static event Action OnIceCreamDelivered;
+        public static void IceCreamDelivered() => OnIceCreamDelivered?.Invoke();
     }
 }

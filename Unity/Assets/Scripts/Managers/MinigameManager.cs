@@ -1,4 +1,5 @@
 ﻿using LD53.Abstractions;
+using TMPro;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
@@ -7,6 +8,10 @@ namespace LD53.Managers
 {
     public class MinigameManager : SceneSingleton<MinigameManager>
     {
+        [Header("Text")]
+        [SerializeField] private TextMeshProUGUI _timerText;
+        [SerializeField] private TextMeshProUGUI _dayText, _moneyText;
+        
         [Header("Buttons")]
         [SerializeField] private Button _driveAwayButton;
 
@@ -16,13 +21,17 @@ namespace LD53.Managers
         [SerializeField] private GameObject _overworldCanvas;
         [SerializeField] private GameObject _overworldSprites;
         [SerializeField] private GameObject _pauseMenu;
+        [SerializeField] private GameObject _jokeWindow, _proverbWindow;
         
         [Header("Misc")]
         [SerializeField] private AudioSource _musicAudioSource;
         
         public ushort DayNumber { get; private set; } = 1;
-
         private bool _isPaused = false;
+        private bool _gameOver = false;
+        private Coroutine _timerRoutine;
+        private ushort _currentTime = 0;
+        private uint _cash = 0;
         
         protected override void InitSingletonInstance()
         {
@@ -36,13 +45,29 @@ namespace LD53.Managers
             }
             
             EventManager.OnGameOver += OnGameOver;
+            EventManager.OnDayOver += EndDay;
+            EventManager.OnIceCreamDelivered += OnIceCreamDelivered;
             
             _driveAwayButton.onClick.AddListener(DriveAway);
+            
+            _timerRoutine = StartCoroutine(CoroutineTemplate.DelayAndFireLoopRoutine(1, () =>
+            {
+                if (_gameOver) return;
+                if (_isPaused) return;
+                _currentTime++;
+                if (_currentTime == 120)
+                {
+                    EventManager.DayOver();
+                }
+                _timerText.text = $"{(_currentTime / 60) + 1}:{_currentTime % 60:00}";
+            }));
         }
 
         private void OnDestroy()
         {
             EventManager.OnGameOver -= OnGameOver;
+            EventManager.OnDayOver -= EndDay;
+            EventManager.OnIceCreamDelivered -= OnIceCreamDelivered;
         }
 
         private void Update()
@@ -55,6 +80,7 @@ namespace LD53.Managers
 
         public void TogglePause()
         {
+            AudioManager.Instance.Play("click");
             _isPaused = !_isPaused;
             _pauseMenu.SetActive(_isPaused);
             if (!_isPaused)
@@ -78,6 +104,7 @@ namespace LD53.Managers
         public void Quit()
         {
             // TODO: Write stats
+            AudioManager.Instance.Play("click");
             SceneManager.LoadScene("Menu");
         }
         
@@ -85,27 +112,38 @@ namespace LD53.Managers
         {
             Debug.Log("Game over!");
         }
+        
+        private void OnIceCreamDelivered()
+        {
+            _cash += 5;
+            _moneyText.text = _cash.ToString("C0");
+        }
 
         private void EndDay()
         {
-            // TODO: Show joke
+            StopCoroutine(_timerRoutine);
+            _timerRoutine = null;
+            _jokeWindow.SetActive(true);
         }
 
         private void StartDay()
         {
-            // TODO: Show proverb
+            DayNumber++;
+            _proverbWindow.SetActive(true);
         }
 
         private void DriveUp()
         {
+            AudioManager.Instance.Play("click");
             _truckCanvas.SetActive(true);
             _truckSprites.SetActive(true);
             _overworldCanvas.SetActive(false);
             _overworldSprites.SetActive(false);
         }
         
-        private void DriveAway()
+        public void DriveAway()
         {
+            AudioManager.Instance.Play("click");
             _overworldCanvas.SetActive(true);
             _overworldSprites.SetActive(true);
             _truckCanvas.SetActive(false);

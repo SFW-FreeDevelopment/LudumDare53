@@ -14,4 +14,8 @@
       <PackageReference Include="Swashbuckle.Core" Version="5.6.0" />
     </ItemGroup>
 
+    <ItemGroup>
+      <ProjectReference Include="..\LudumDare53.API.Models\LudumDare53.API.Models.csproj" />
+    </ItemGroup>
+
 </Project>

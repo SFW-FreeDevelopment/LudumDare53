@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using LD53.Managers;
 using UnityEngine;
 
 namespace LD53
@@ -22,9 +23,13 @@ namespace LD53
         private int horizontalInput = 0;
         private bool isReversing = false;
 
+        private AudioSource _audioSource;
+
         // Start is called before the first frame update
         void Start()
         {
+            _audioSource = GetComponent<AudioSource>();
+            _audioSource.volume = SettingsManager.Instance.Settings.SfxVolume;
             // Get a reference to the Rigidbody2D component
             rb = GetComponent<Rigidbody2D>();
         }
@@ -98,16 +103,22 @@ namespace LD53
 
             if (verticalInput > 0f)
             {
+                if (!_audioSource.isPlaying)
+                    _audioSource.Play();
                 isReversing = false;
                 return 1;  // W or Up Arrow was pressed
             }
             else if (verticalInput < 0f)
             {
+                if (!_audioSource.isPlaying)
+                    _audioSource.Play();
                 isReversing = true;
                 return -1;  // S or Down Arrow was pressed
             }
             else
             {
+                if (_audioSource.isPlaying)
+                    _audioSource.Stop();
                 isReversing = false;
                 return 0;  // No vertical input
             }

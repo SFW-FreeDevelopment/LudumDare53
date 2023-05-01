@@ -37,11 +37,13 @@ namespace LD53.Managers
         {
             if (Flavor1 == null)
             {
+                AudioManager.Instance.Play("scoop");
                 Flavor1 = flavor;
                 _iceCream1.sprite = _iceCreamFlavorSprites[(int)flavor];
             }
             else if (Flavor2 == null)
             {
+                AudioManager.Instance.Play("scoop");
                 Flavor2 = flavor;
                 _iceCream2.sprite = _iceCreamFlavorSprites[(int)flavor];;
             }
@@ -66,6 +68,7 @@ namespace LD53.Managers
         private void AttemptGiveCone()
         {
             if (Flavor1 == null) return;
+            AudioManager.Instance.Play("register");
             var coneWasCorrect = Order.GiveCone(Flavor1.Value, Flavor2);
             if (coneWasCorrect)
             {

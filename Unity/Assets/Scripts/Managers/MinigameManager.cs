@@ -149,11 +149,11 @@ namespace LD53.Managers
         public void Quit()
         {
             AudioManager.Instance.Play("click");
-            PostResults();
+            //PostResults();
             SceneManager.LoadScene("Menu");
         }
 
-        private async Task PostResults()
+        private void PostResults()
         {
             try
             {
@@ -170,7 +170,6 @@ namespace LD53.Managers
             {
                 // do nothing
             }
-            await Task.CompletedTask;
         }
         
         private void OnGameOver()
@@ -203,7 +202,7 @@ namespace LD53.Managers
         private void StartDay()
         {
             AudioManager.Instance.Play("register");
-            _cash -= 15 + (DayNumber * 5);
+            _cash -= (15 + (DayNumber * 5));
             if (_cash < 0)
             {
                 EventManager.GameOver();
